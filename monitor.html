@@ -9,26 +9,34 @@
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
 <script type="text/javascript">
-	google.charts.load('current', {'packages':['bar']});
+	google.charts.load('current', {'packages':['corechart']});
 
-	var pinData = [['Move','percentage'],['Lube1',98],['Lube2',80],['Lube3',80],['Lube4',10]];
-
+	var pinData = [['Element','Density',{role:'style'}],
+					['LUBE1',100, 'blue'],
+					['LUBE2',100, 'darkgray'],
+					['LUBE3',100, 'darkgray'],
+					['LUBE4',100, 'darkgray']];
+					
 	function drawPin( pinData,id){
 		var data = new google.visualization.arrayToDataTable(pinData);
-		var option = {
-			totle: 'chess opening moves',
+
+		var view = new google.visualization.DataView(data);
+		view.setColumns([0,1,
+						{calc:'stringify',
+						 sourceColumn:1,
+						 type: 'string',
+						 role:'annotation'},
+						 2]);
+						
+		var options = {
+			// title: 'Lubrication Pin state',
 			width: 300,
+			bar  : {groupWidth:'30%'},
 			legend: { position: 'none' },
-			axes: {
-			x : {
-				0: { side: 'top', label: ''}
-		    	}
-				},
-			bar : { groupWidth: "20%" }
 			};
 			
-		var chart = new google.charts.Bar(document.getElementById(id));
-		chart.draw(data, google.charts.Bar.convertOptions(option));
+		var chart = new google.visualization.ColumnChart(document.getElementById(id));
+		chart.draw(view, options);
 	}
 
 </script>
@@ -38,10 +46,11 @@
 	function tableCreate( ){
 
 		var title = ['M','version','group','sensor#','MY', 'MP','SH','SL','DH','DL',
-						'%V','Sola V','Batt V','Core T', 'Chip V', 
-    					'DB','Devi Id','NI','No Sens'
+						'%V','S.V','B.V','C.T', 'C.V', 
+    					'DB','D.Id','NI','No.S'
 					];
 
+		var tableWidth = ['60','60','60','60','60','60','30','60','40','40','30','60','60','60','60'];
 		var x = document.createElement('TABLE');
 		x.setAttribute("id","tblData2");
 
@@ -53,6 +62,8 @@
 			var td = tr.insertCell();
 			td.appendChild(document.createTextNode(title[i+4]));
 			td.style.border = '1px solid black';
+			td.setAttribute('width',tableWidth[i]);
+			td.setAttribute('align','center');
 		}
 
 		for(var j = 0 ; j < 7 ; j++){
@@ -76,6 +87,8 @@
 			var td = tr.insertCell();
 			td.appendChild(document.createTextNode(title[i+4]));
 			td.style.border = '1px solid black';
+			td.setAttribute('width',tableWidth[i]);
+			td.setAttribute('align','center');
 		}
 
 		for(var j = 0 ; j < 7 ; j++){
@@ -90,20 +103,37 @@
 	}
 
 	function changeContent(id, row, cell, content) {
+
+		var test = row;
+		
+		if( test === 1 ){ test = 7;
+		} else { test = row -1;}
+		
+    	var a = document.getElementById(id).rows[test].cells;
+    	a[cell].setAttribute('bgColor','white');
+    	
     	var x = document.getElementById(id).rows[row].cells;
     	x[cell].innerHTML = content;
+    	x[cell].setAttribute('bgColor','yellow');
 	}		
 
 
 	function writeTable(msg, test, no){
-		
+
+		var val ='---';
        	var tmp = msg.split(",");
+
 		console.log("msg :", tmp);
+
+
 		for(var i = 4 ; i < 19 ; i++){
+
+			if( tmp[0] === 'M'){ val = tmp[i];}
+		
 			if( no === 2 ){
-				changeContent('tblData2',test,i-4,tmp[i]);
+				changeContent('tblData2',test,i-4,val);
 			} else{
-				changeContent('tblData3',test,i-4,tmp[i]);
+				changeContent('tblData3',test,i-4,val);
 			}
 		}
 	}
@@ -134,38 +164,56 @@
 
 
 		socket.on('endDevice',function( data ) {
-			console.log(data.endDevice.rxData);
+			// console.log(data.endDevice.rxData);
 
 			if( count1 < 7) { count1 = count1 +1;
 			} else { count1 = 1;}
 
 			writeTable(data.endDevice.rxData,count1,2);
+			
+			var count = data.endDevice.numSens;
+			console.log("data.endDevice.numSense:" + count );
 
 			for(var i = 0 ; i < 4 ; i++){
-				var a = data.sens[i].status;
-				var sum = a[0]*1 + a[1]*2 + a[2] * 4 + a[3] *8 + a[4]*16;
-				sum = sum * 100 / 32 + 5;	  
-				pinData[i+1][1] = sum;
-			}
 
+				if( i < count ){
+					var a = data.sens[i].status;
+				
+					var sum = a[0]*1 + a[1]*2 + a[2] * 4 + a[3] *8 + a[4]*16;
+					sum = sum * 100 / 32 + 5;	  
+					pinData[i+1][1] = sum;
+					pinData[i+1][2] = 'blue';
+				}else{
+					pinData[i+1][1] = 100;
+					pinData[i+1][2] = 'gray';
+				}
+			}
 			drawPin( pinData,"right_div1");
 		});
 
 		socket.on('endDevice1',function( data ) {
-			console.log(data.endDevice.rxData);
 
 			if( count2 < 7) { count2 = count2 +1;
 			} else { count2 = 1;}
 
 			writeTable(data.endDevice.rxData,count2,3);
 
-			for(var i = 0 ; i < 4 ; i++){
-				var a = data.sens[i].status;
-				var sum = a[0]*1 + a[1]*2 + a[2] * 4 + a[3] *8 + a[4]*16;
-				sum = sum * 100 / 32 + 5;	  
-				pinData[i+1][1] = sum;
-			}
+			var count = data.endDevice.numSens;
+			console.log("data.endDevice.numSense:" + count );
 
+			for(var i = 0 ; i < 4 ; i++){
+
+				if( i < count ){
+					var a = data.sens[i].status;				
+					var sum = a[0]*1 + a[1]*2 + a[2] * 4 + a[3] *8 + a[4]*16;
+					sum = sum * 100 / 32 + 5;	  
+					pinData[i+1][1] = sum;
+					pinData[i+1][2] = 'blue';
+				}else{
+					pinData[i+1][1] = 0;
+					pinData[i+1][2] = 'gray';
+				}
+			}
 			drawPin( pinData,"right_div2");
 
 		});

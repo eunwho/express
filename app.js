@@ -57,6 +57,7 @@ if(!fs.existsSync(logfile_name)) {
 	WSNT = JSON.parse(content);
 }
 
+
 /*
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/test');
@@ -66,10 +67,8 @@ var db = mongoose.connection;
 	db.once('open',function(){
 	// we're connected
 });
-*/
 
 
-/*
 var schema = mongoose.Schema({
 	data: wsnData
 });
@@ -81,8 +80,8 @@ mongoData.save(function ( err,WSNT){
 	if(err) return console.error(err);
 	console.log('SAVED WSNT');
 });
-*/
 
+*/
 
 // Pre-exit scripts
 
@@ -93,7 +92,7 @@ process.stdin.resume();
 
 process.on('exit',function(code) {
 	var i;
-	console.long('Process exit');
+	console.log('Process exit');
 
 	for( i = 0; i < preExit.length; i++){
 		preExit[i](code);
@@ -140,7 +139,7 @@ app.get('/',function ( req,res){
 });
 
 app.get('/app.css', function (req, res) {
-  res.sendfile(__dirname + '/app.css');  
+  res.sendFile(__dirname + '/app.css');  
 });
 
 app.get('/wsnObj',function ( request, response, next) {
@@ -157,6 +156,7 @@ io.on('connection',function(socket){
 	
 	socket.on('CH0',function(from,msg){  // from backstay
 
+		console.log('From CH0 RXD:', msg);
 		var tmp1 = msg.split(",");
 		var timeNow = new Date();
 
@@ -178,7 +178,7 @@ Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,
 				WSNT[rxGroupId][rxDistId].endDevice.oldRxTime = timeSaved; 
 				WSNT[rxGroupId][rxDistId].endDevice.rxTime	  = timeNow;  
 				WSNT[rxGroupId][rxDistId].endDevice.rxData = msg;  
-				WSNT[rxGroupId][rxDistId].endDevice.numSens = tmp1[19];  
+				WSNT[rxGroupId][rxDistId].endDevice.numSens = tmp1[18];  
 
 				console.log( 'emit 1');
 				console.log(WSNT[rxGroupId][rxDistId].endDevice.rxData);  
@@ -193,9 +193,9 @@ Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,
 				var rxSensId = tmp1[1]*100 + tmp1[2]*1;
 				var rxSensNum = tmp1[14] *1;
 
-				var rxStatus = [1,1,1,1,1];
+				var rxStatus = [0,0,0,0,0];
 				for( var i = 0 ; i < 5 ; i++){
-					if( tmp1[4+i] < 100) rxStatus[i] = 0;
+					if( tmp1[4+i] < 100) rxStatus[i] = 1;
 				}
 
 				var notExistId = true;
