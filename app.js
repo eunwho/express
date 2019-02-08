@@ -42,6 +42,11 @@ var sensObj = {	enabled: true, sensId: 0, elapsed: now, oldStatus: [0,0,0,0,0,0]
 
 var sensor = [sensObj,sensObj,sensObj,sensObj];
 
+/* status :
+  0 :ckecking
+  1 : no checking
+  2 : low battery	
+*/
 var mastCtrl = { numSens : 0, rxTime : now, oldRxTime : now, status : 0, rxData :'0000'};
 
 var G0 = [], G1 = [], G2 = [], G3 = [], G4 = [], G5 = [], G6 = [], G7 = [];
@@ -49,7 +54,6 @@ var G0 = [], G1 = [], G2 = [], G3 = [], G4 = [], G5 = [], G6 = [], G7 = [];
 var WSNT = [G0,G1,G2,G3,G4,G5,G6,G7];
 
 for ( var i = 0 ; i < 8 ; i ++ ){
-
 	var count = arryEndDevice[i]; 
 	for ( var j = 0 ; j < count ; j ++){
 		WSNT[i].push({
@@ -59,10 +63,55 @@ for ( var i = 0 ; i < 8 ; i ++ ){
 	}
 }
 
-//var fs = require('fs');
+// ìlist of no ckeck master  
+var G00 = [1,0];
+var G01 = [0,0,0,0,0, 1,1,0,0,1, 1,1,0,0,0,0, 0,0,1,0,0, 1,0,0,1,0];
+var G02 = [0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0,0, 0,0,0,0,1, 0,0,0,0,0, 0,0,0,0,0, 1,0,0,0,0, 0];
+
+var G03 = [0,1];
+var G04 = [0,1,1,0,1, 0,0,0,0,0, 0,0,0,0,0,1, 0,1,1,0,0, 1,0,0,0,0];
+var G05 = [0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0,0, 1,0,0,0,0, 0,0,0,0,0, 0,0,0,0,1, 0,0,0,0,0, 0];
+
+var G06 = [1,0,1,0,0, 0,0,0,0,0, 0,1,0,0,0,0, 0,0,0];
+var G07 = [0,0,0,0,0, 0,1,1,1,0, 0,0,0,0,0,1, 0,0,0];
+
+var WSNT_STATE = [G00,G01,G02,G03,G04,G05,G06,G07];
+
+var fs = require('fs');
 
 var now = new Date();
 var preExit = [];
+var now = new Date();
+var logfile_name = now.getFullYear() +'_'+ now.getMonth() + "_" + now.getDay() +'.json';
+var logFile = 'eunwhoData.json';
+
+// Check that the file exists locally
+if(!fs.existsSync(logFile)) {
+
+  	console.log("File not found");
+
+	var test = JSON.stringify(WSNT);
+	fs.writeFileSync(logFile,test, 'utf8');
+	fs.writeFileSync(logfile_name,test, 'utf8');
+
+} else {
+  // Read the file and do anything you want
+	var content = fs.readFileSync(logFile, 'utf8');
+	WSNT = JSON.parse(content);
+}
+
+for ( var i = 0 ; i < 8 ; i ++ ){
+	var count = arryEndDevice[i]; 
+	for ( var j = 0 ; j < count ; j ++){
+		var temp = WSNT_STATE[i][j];
+
+		if(temp == 1 ){
+			WSNT[i][j].endDevice.status = 3;
+			//console.log('GroupID = %d,masterId=%d,status=%s',i,j,WSNT[i][j].endDevice.status);
+		};
+	}
+}
+
 process.stdin.resume();
 process.on('exit',function(code) {
 	var i;
@@ -80,7 +129,6 @@ process.on ('SIGINT', function () {
 	var test = JSON.stringify(WSNT);
 	fs.writeFileSync(logfile_name,test, 'utf8');
 	fs.writeFileSync(logFile,test, 'utf8');
-
 	process.exit (0);
 });
 
@@ -366,14 +414,14 @@ io.on('connection',function(socket){
 
 	socket.on('CH0',function(from,msg){	// from back
 		io.to('sensornet').emit('rxdmsg',msg);
-
+//		console.log(msg);
 		var wsnIn = new wsnDB1({wsnData:msg});
 		wsnIn.save(function(err,wsnIn){
 			if(err){
 				console.log(err);
 				return console.error(err);
 			}else{
-				console.log('CH0 SAVED :'+msg);
+					 console.log('CH0 SAVED :'+msg);
 			}
 		});
 
@@ -384,8 +432,21 @@ io.on('connection',function(socket){
 			//console.log("sensornumber=" + tmp1[16] );
 			//console.log("battery volt=" + tmp1[12] );
 			//console.log("number of sensors =" + tmp1[18] );
-			if(tmp1[12]< 3.3) {
+
+			var status = WSNT[x][y].endDevice.status;
+//--- lowbattery proc
+			if(tmp1[12] < 3.3) {
 				io.to('sensornet').emit('lowbattery',{x: y, y:x});
+				if( status != 2 ){
+					WSNT[x][y].endDevice.status = 2;
+					var test = JSON.stringify(WSNT);
+					fs.writeFileSync(logFile,test, 'utf8');
+				}
+			} else if( status == 2 ){
+				console.log('not lowbattery');
+				WSNT[x][y].endDevice.status = 1;
+				var test = JSON.stringify(WSNT);
+				fs.writeFileSync(logFile,test, 'utf8');
 			}
 		} else if((tmp1[0] ==='L')&&(tmp1[12][0]==='G')){
 			var x = Number(tmp1[12][1]);

@@ -10,8 +10,8 @@
 <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
 
 <script>
- var socket = io.connect('http://192.168.110.10:7532'); // for Hydai 
-//	var socket = io.connect('http://192.168.0.10:7532');   // for eunwho P.E.
+// var socket = io.connect('http://192.168.110.10:7532'); // for Hydai 
+	var socket = io.connect('http://192.168.0.10:7532');   // for eunwho P.E.
 //------------------------------------------------------------
 	var textArea =[];
 	var count1 = 0;
@@ -272,14 +272,17 @@ socket.on('moved',function( data ) {
 	var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
 	$target.removeClass('init stalled').addClass('moved');
 });
+
 socket.on('lowbattery',function( data ) {
 	var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
 	$target.removeClass('init stalled').addClass('lowbattery');
 });
+
 socket.on('sensorErr',function( data ) {
 	var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
 	$target.removeClass('init stalled').addClass('sensorErr');
 });
+
 socket.on('normal',function( data ) {
 	var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
 	$target.removeClass('init stalled').addClass('signalOn1');
@@ -417,12 +420,11 @@ $(document).ready(function() {
 						
 						var status = sensCtrl.endDevice.status;
 						if( status == 0 ){			
-							$output.removeClass("moved stalled").addClass('init'); 
-						}else if( status == 1 ) {	
-							$output.removeClass("init stalled").addClass('init'); 
-							$output.addClass('moved'); 
-						}else if( status == 2 ) {
-							$output.removeClass("init moved").addClass('stalled'); 
+							$output.removeClass("moved stalled noCheck").addClass('init'); 
+						}else if( status == 3 ) {			// not check	
+							$output.removeClass("init stalled").addClass('noCheck'); 
+						}else if( status == 2) { // low battery
+							$output.removeClass("init moved").addClass('lowbattery'); 
 						} 
 						else {
 							$output.removeClass("moved stalled").addClass('init'); 
@@ -502,15 +504,15 @@ function drawGraph(){
    	<aside> 
    		<table id="tbthsensor">
    			<tr>	<th>LOC. PART</th><th> PMP/S NO </th> </tr>	
-	    		<tr> <th rowspan="3">JIB PORT</th><th>P1</th> </tr>
-	 		<tr> <th>P2</th> </tr>
-	 		<tr> <th>P3</th> </tr>
+	    		<tr> <th rowspan="3">JIB PORT</th><th>P1(G001~)</th> </tr>
+	 		<tr> <th>P2(G101~)</th> </tr>
+	 		<tr> <th>P3(G201~)</th> </tr>
 			
-	    		<tr> <th rowspan="3">JIB STBD</th><th>S1</th> </tr>
-	 		<tr>	<th>S2</th>	</tr>
-	 		<tr>	<th>S3</th>	</tr>
-	 		<tr>	<th>A-PORT</th><th>P1</th> </tr>
-	 		<tr>	<th>A-STBD</th><th>S1</th> </tr>
+	    		<tr> <th rowspan="3">JIB STBD</th><th>S1(G301~)</th> </tr>
+	 		<tr>	<th>S2(G401~)</th>	</tr>
+	 		<tr>	<th>S3(G501~)</th>	</tr>
+	 		<tr>	<th>A-PORT</th><th>P1(G601~)</th> </tr>
+	 		<tr>	<th>A-STBD</th><th>S1(G701~)</th> </tr>
 	    </table>
 	</aside>
 
@@ -547,8 +549,9 @@ function drawGraph(){
 			</table>
 
 				<table id='table2' width = '1000' ></table>
-				<div id="right_div1" style="width: 290px; height: 113px;">
+<!--				<div id="right_div1" style="width: 290px; height: 113px;">
 			</div>	
+-->
 	</div>	
 	<div id='rxdMsgBox' class = 'cssRxMsgBox'>	
 		<p id = 'rxdMsg' class = 'cssRxMsg'>wait data !	</p>
