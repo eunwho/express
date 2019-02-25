@@ -208,9 +208,9 @@ function sensProc(msg,x,y){
  							
 				if(elapsed > 48 ){ 
 //--- sens stalled for 2 days 
-					WSNT[x][y].sens[si].moving == false;
-					WSNT[x][y].endDevice.status == 2;
-					io.to('sensornet').emit('stalled',{x: y, y:x});
+//					WSNT[x][y].sens[si].moving == false;
+//					WSNT[x][y].endDevice.status == 2;
+//					io.to('sensornet').emit('stalled',{x: y, y:x});
 				}
 			}else{
 //--- sens moving 						
@@ -452,10 +452,20 @@ io.on('connection',function(socket){
 			var x = Number(tmp1[12][1]);
 			var y = tmp1[12][2] * 10 + tmp1[12][3]*1 -1;
 			//console.log("sensor=" + tmp1[14] );
- 			if(arrySensNo[x][y] != tmp1[14]){
-				io.to('sensornet').emit('sensorErr',{x: y, y:x});
+// 			if(arrySensNo[x][y] != tmp1[14]){
+//				io.to('sensornet').emit('sensorErr',{x: y, y:x});
+//			}else {
+//				io.to('sensornet').emit('normal',{x: y, y:x});
+				
+			if(arrySensNo[x][y] != tmp1[14]){
+				io.to('sensornet').emit('lowbattery',{x: y, y:x});
+				if( status != 2 ){
+					WSNT[x][y].endDevice.status = 2;
+					var test = JSON.stringify(WSNT);
+					fs.writeFileSync(logFile,test, 'utf8');
+				}
 			}else {
-				io.to('sensornet').emit('normal',{x: y, y:x});
+				io.to('sensornet').emit('sensorErr',{x: y, y:x});
 			}
 		}
 		socketProc(from,msg);
