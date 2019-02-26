@@ -142,14 +142,14 @@ address{        }
 #box4{ 
 	width: 20px;
 	height: 20px;
-	margin-left: 80px;
+	margin-left: 90px;
 	background: yellow;
 	float: left;
 }
 #box5{ 
 	width: 20px;
 	height: 20px;
-	margin-left: 120px;
+	margin-left: 130px;
 	background: gray;
 	float: left;
 }
@@ -177,12 +177,12 @@ address{        }
 }
 #name4{
 	margin-top: -20px;
-	margin-left: 470px;
+	margin-left: 370px;
 	float: left;
 }
 #name5{
 	margin-top: -20px;
-	margin-left: 610px;
+	margin-left: 515px;
 	float: left;
 }
 #rxdMsg{
