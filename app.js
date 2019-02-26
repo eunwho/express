@@ -439,9 +439,9 @@ io.on('connection',function(socket){
 
 	socket.on('clickDevice',function(data){
 
-		//console.log('data.y : ' + data.y +'    data.x : '+ data.x);
+		console.log('data.y : ' + data.y +'    data.x : '+ data.x);
 
-
+		
 		var sensorList = [];
 		var masterName = getMasterId(data.y,data.x);
 		var graphObj = {

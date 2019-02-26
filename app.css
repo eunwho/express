@@ -86,7 +86,7 @@ address{        }
 .signalOn1{background: blue;}
 .signalOn2{background: lightblue;}
 .lowbattery{background: yellow;}
-.sensorErr{background: red;}
+.sensorErr{background: blue;}
 
 
 #test1{ 
@@ -106,7 +106,7 @@ address{        }
 
 #scatter { height: 680px; margin-top: 10px; margin-left: 15px;}
 
-#table2 { margin-top: 10px;  margin-left: 15px; }
+#table2 { margin-top: 20px;  margin-left: 160px; }
 
 
 #box{

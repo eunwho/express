@@ -365,7 +365,7 @@ socket.on('received',function( data ) {
 });
 
 socket.on('graphData',function( docs ) {
-
+	console.log(docs);
 	graphData1 = docs.table4;
 	graphData2 = docs.table3;
 	graphData3 = docs.table2;
@@ -502,15 +502,15 @@ function drawGraph(){
    	<aside> 
    		<table id="tbthsensor">
    			<tr>	<th>LOC. PART</th><th> PMP/S NO </th> </tr>	
-	    		<tr> <th rowspan="3">JIB PORT</th><th>P1</th> </tr>
-	 		<tr> <th>P2</th> </tr>
-	 		<tr> <th>P3</th> </tr>
+	    		<tr> <th rowspan="3">JIB PORT</th><th>P1(G001~)</th> </tr>
+	 		<tr> <th>P2(G101~)</th> </tr>
+	 		<tr> <th>P3(G201~)</th> </tr>
 			
-	    		<tr> <th rowspan="3">JIB STBD</th><th>S1</th> </tr>
-	 		<tr>	<th>S2</th>	</tr>
-	 		<tr>	<th>S3</th>	</tr>
-	 		<tr>	<th>A-PORT</th><th>P1</th> </tr>
-	 		<tr>	<th>A-STBD</th><th>S1</th> </tr>
+	    		<tr> <th rowspan="3">JIB STBD</th><th>S1(G301~)</th> </tr>
+	 		<tr>	<th>S2(G401~)</th>	</tr>
+	 		<tr>	<th>S3(G501~)</th>	</tr>
+	 		<tr>	<th>A-PORT</th><th>P1(G601~)</th> </tr>
+	 		<tr>	<th>A-STBD</th><th>S1(G701~)</th> </tr>
 	    </table>
 	</aside>
 
@@ -547,8 +547,9 @@ function drawGraph(){
 			</table>
 
 				<table id='table2' width = '1000' ></table>
-				<div id="right_div1" style="width: 290px; height: 113px;">
+<!--				<div id="right_div1" style="width: 290px; height: 113px;">
 			</div>	
+-->
 	</div>	
 	<div id='rxdMsgBox' class = 'cssRxMsgBox'>	
 		<p id = 'rxdMsg' class = 'cssRxMsg'>wait data !	</p>
