@@ -99,23 +99,33 @@ preExit.push (function (code) {
 });
 
 // serve
+var path = require('path');
 var app = require('express')();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 
-server.listen(7532);
 
 app.get('/',function ( req,res){
 	res.sendFile(__dirname +'/monitor.html');
 });
 
+app.get('/js/jquery.min.js',function ( req, res) {
+	res.sendFile(path.join(__dirname +'/js/jquery.min.js'));
+}); 
+
+app.get('/js/graph.js',function ( req, res) {
+	res.sendFile(path.join(__dirname +'/js/graph.js'));
+}); 
+
 app.get('/app.css', function (req, res) {
-  res.sendfile(__dirname + '/app.css');  
+  res.sendFile(__dirname + '/app.css');  
 });
 
 app.get('/wsnObj',function ( request, response, next) {
 	response.send(WSNT);
 }); 
+
+server.listen(7532);
 
 
 // L,2,43,300,620,649,691,722,669,655,281,3.29,CS44,21719,3
