@@ -2,7 +2,6 @@
 // var socket = io.connect('http://192.168.0.10:7532');   // for eunwho P.E.
 var socket = io.connect('http://192.168.0.205:7532');   // for eunwho test.
 //------------------------------------------------------------
-
 const GRAPH_MAX_COUNT= 1440; // 1 hour count
 
 var oscope = (function() {
@@ -59,15 +58,13 @@ var oscope = (function() {
   var mid_div = [0,0,0,0];
 
   var hgrid_base = [
-    [0.0,1.0/10.0,1.0,1.0/10.0],
-    [0.0,2.0/10.0,1.0,2.0/10.0],
-    [0.0,3.0/10.0,1.0,3.0/10.0],
-    [0.0,4.0/10.0,1.0,4.0/10.0],
-    [0.0,5.0/10.0,1.0,5.0/10.0],
-    [0.0,6.0/10.0,1.0,6.0/10.0],
-    [0.0,7.0/10.0,1.0,7.0/10.0],
-    [0.0,8.0/10.0,1.0,8.0/10.0],
-    [0.0,9.0/10.0,1.0,9.0/10.0],
+    [0.0,1.0/8.0,1.0,1.0/8.0],
+    [0.0,2.0/8.0,1.0,2.0/8.0],
+    [0.0,3.0/8.0,1.0,3.0/8.0],
+    [0.0,4.0/8.0,1.0,4.0/8.0],
+    [0.0,5.0/8.0,1.0,5.0/8.0],
+    [0.0,6.0/8.0,1.0,6.0/8.0],
+    [0.0,7.0/8.0,1.0,7.0/8.0]
   ];var hgrid;
 
   var vgrid_base = [
@@ -272,8 +269,8 @@ var oscope = (function() {
 
   function onPaint(trace) {
     drawBackground(m_context,m_width,m_height,m_voffset);
-    drawAnnotations(m_context,m_width,m_height,m_text_size);
-	 writeLegend(); 
+//    drawAnnotations(m_context,m_width,m_height,m_text_size);
+//	 writeLegend(); 
   }
 
   function onVerticalOffset(channel,offset)
@@ -350,7 +347,7 @@ var oscope = (function() {
 
 	function drawDot(gCount, chData){
 		try{
-			var hs = 900 / GRAPH_MAX_COUNT;
+			var hs = 0.888;
 			var ctx = m_context;
 			var i;
 
@@ -358,7 +355,7 @@ var oscope = (function() {
    		var ys = [ 200/250, 200/12.5, 200/125, 200/125, 200/125, 200/125, 200/125, 200/125];
    		var fStyle=["red","green","aquamarine","black","blue","cyan","darkgray","aqua"];
 
-			for(i = 0; i < 8 ; i ++){
+			for(i = 1; i < 8 ; i ++){
 	      	ctx.fillStyle = fStyle[i];
    	   	ctx.fillRect( gCount * hs, 200 - ( chData[i] * 1.0 + tempOffset[i]) * ys[i],2,2);    
 			}
@@ -474,9 +471,9 @@ var oscope = (function() {
 
 	function drawGraph( ){
 
-//		drawSens(0,graphData1);
-//		drawSens(1,graphData2);
-//		drawSens(2,graphData3);
+		drawSens(0,graphData1);
+		drawSens(1,graphData2);
+		drawSens(2,graphData3);
 		drawSens(3,graphData4);
 	}
 
@@ -763,7 +760,8 @@ $(document).ready(function() {
 	if (oscope) {
    	oscope.init();
   	}
- 	// oscope.drawGraph(trace);
+
+ 	oscope.drawGraph();
  	// oscope.drawSens(graphData1);
  	//oscope.drawTest();
 });
