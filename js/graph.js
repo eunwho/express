@@ -7,14 +7,14 @@ const GRAPH_MAX_COUNT= 1440; // 1 hour count
 var oscope = (function() {
   var m_canvas;
   var m_context;
-  var m_width = 1440;
+  var m_width = 1280;
   var m_height = 400;
   var m_h2;
   var m_voffset = [];
   // these must match the initial values of the controls
   // doh! no two way data bindind
   var mSecPerDiv		  		 = 0.100;
-  var m_samples_per_second = 1000;
+  var m_samples_per_second = 1280;
   var m_divisions          = 10;
   var m_yscale             = 512;
   var m_sample_bits        = 10;
@@ -171,7 +171,7 @@ var oscope = (function() {
     ctx.scale(1.0,-1.0);
 
     // draw the outline
-    ctx.save();
+//    ctx.save();
     ctx.strokeStyle = 'darkgray';
     ctx.lineWidth   = 6;
     drawPath(ctx,outline);
@@ -185,6 +185,19 @@ var oscope = (function() {
     drawLines(ctx,hgrid);
     drawLines(ctx,vgrid);
     ctx.restore();
+
+	 var hardLine1 = [0.0, 100, 1280, 100];
+	 var hardLine2 = [0.0, 200, 1280, 200];
+	 var hardLine3 = [0.0, 300, 1280, 300];
+ 
+    ctx.save();
+    ctx.strokeStyle = "rgba(0,0,0,1.0)";
+    ctx.lineWidth   = 3;
+    drawLine(ctx,hardLine1);
+    drawLine(ctx,hardLine2);
+    drawLine(ctx,hardLine3);
+    ctx.restore();
+
   }
 
   function drawAnnotations(ctx,width,height,dy)

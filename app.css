@@ -185,11 +185,22 @@ address{        }
 	margin-left: 515px;
 	float: left;
 }
+
 #rxdMsg{
-	position: relative;
+	position: auto;
 	margin: 0 auto;
 	width: 1280px;
 	height: 400px;
+	margin-top: 10px;
+	text-align: left;
+   border: 1px solid black;
+}
+
+#table2{
+	position: center;
+	margin: 0 auto;
+	width: 1280px;
+	height: 150px;
 	margin-top: 10px;
 	text-align: left;
    border: 1px solid black;
